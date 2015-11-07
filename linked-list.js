@@ -50,27 +50,26 @@ LinkedList.prototype.addToIndex = function(index, value) {
   var current = this.head;
   var indexCounter = 0;
   var previousIndex = index - 1;
-  var temporary;
+  var listTail;
 
   if(index > this.length-1 || index < 0) {
-    return console.log('last index is ' + (this.length-1) + ' and you wanted to add to index ' + index);
+    return console.log('Error. Last index is ' + (this.length-1) + ' and you wanted to add to index ' + index);
   } else if(index === 0) {
     var oldHead = this.head;
-    var newHead = {
+    this.head = {
       value: value,
       next: oldHead
     }
-    this.head = newHead;
     indexCounter += 1;
     this.length += 1;
     return console.log('added a node "' + value + '" to index ' + index);
   } else {
     while(current) {
       if(indexCounter === previousIndex) {
-        restOfTheList = current.next;
+        listTail = current.next;
         current.next = {
           value: value,
-          next: restOfTheList
+          next: listTail
         };
         this.length += 1;
         indexCounter += 1;
@@ -86,11 +85,11 @@ linkedList.addToIndex(1, 'b');
 console.log("whole list: ", linkedList.head);
 
 
-//peek to see the value a specific index
+//peek to see the value of a specific index
 LinkedList.prototype.peekIndex = function(index) {
   console.log('peeking...');
   if(index > this.length-1 || index < 0) {
-    return console.log('last index is ' + (this.length-1) + ' and you wanted to see index ' + index);
+    return console.log('Error. The last index is ' + (this.length-1) + ' and you wanted to see index ' + index);
   }
   var counter = 0;
   var current = this.head;
@@ -162,8 +161,8 @@ LinkedList.prototype.removeValue = function(value) {
   var current = this.head;
   var previous;
 
-  if(this.head.value === value) {
-    return this.head = this.head.next;
+  if(current.value === value) {
+    return this.head = current.next;
   }
 
   while(current) {
@@ -236,3 +235,4 @@ LinkedList.prototype.reverse = function() {
   return console.log(this.head);
 };
 linkedList2.reverse();
+linkedList.reverse();
