@@ -3,8 +3,9 @@ function LinkedList(){
   this.length = 0;//optional, for checking the length of the list
 };
 
-//add nodes to the end of the linked list
-LinkedList.prototype.addAfter = function(value) {
+
+//append to the linked list
+LinkedList.prototype.append = function(value) {
   var node = {
     value: value,
     next: null
@@ -20,17 +21,19 @@ LinkedList.prototype.addAfter = function(value) {
     }
     current.next = node;
   }
-  this.length += 1;//after every addition, increase length by one
+  this.length += 1;
   return console.log("added: ", node);
 };
 
-//add nodes, see the whole list and check length
 var linkedList = new LinkedList();
 console.log('add nodes...');
-linkedList.addAfter('c');
+linkedList.append('c');
+linkedList.append('d');
+linkedList.append('e');
 
-//add node to the front of the linked list
-LinkedList.prototype.addFirst = function(value) {
+
+//prepend a node to the linked list
+LinkedList.prototype.prepend = function(value) {
   var oldHead = this.head;
   var newHead = {
     value: value,
@@ -40,7 +43,7 @@ LinkedList.prototype.addFirst = function(value) {
   this.head = newHead;
   return console.log('added new head: ', this.head);
 };
-linkedList.addFirst('a');
+linkedList.prepend('a');
 
 //add a node to a wanted index
 LinkedList.prototype.addToIndex = function(index, value) {
@@ -59,6 +62,7 @@ LinkedList.prototype.addToIndex = function(index, value) {
     }
     this.head = newHead;
     indexCounter += 1;
+    this.length += 1;
     return console.log('added a node "' + value + '" to index ' + index);
   } else {
     while(current) {
@@ -68,6 +72,7 @@ LinkedList.prototype.addToIndex = function(index, value) {
           value: value,
           next: restOfTheList
         };
+        this.length += 1;
         indexCounter += 1;
         return console.log('added a node "' + value + '" to index ' + index);
       }
@@ -78,8 +83,8 @@ LinkedList.prototype.addToIndex = function(index, value) {
 };
 
 linkedList.addToIndex(1, 'b');
-linkedList.addAfter('d');
 console.log("whole list: ", linkedList.head);
+
 
 //peek to see the value a specific index
 LinkedList.prototype.peekIndex = function(index) {
@@ -100,6 +105,25 @@ LinkedList.prototype.peekIndex = function(index) {
   return console.log('value of index ' + index + " is", current.value + " and it's the last index of the list.");
 };
 linkedList.peekIndex(1);
+linkedList.peekIndex(6);
+
+
+//check if specific value is included in the list
+LinkedList.prototype.includes = function(value) {
+  var current = this.head;
+  var counter = 0
+  while(current){
+    if(current.value === value) {
+      return console.log("value " + value + " is on the index " + counter);
+    }
+    current = current.next;
+    counter += 1;
+  }
+  return console.log("value " + value + " is not in the list");
+};
+linkedList.includes('b');
+linkedList.includes('x');
+
 
 //remove last node
 LinkedList.prototype.removeLast = function() {
@@ -121,22 +145,42 @@ linkedList.removeLast();
 console.log("length: " + linkedList.length);
 console.log(linkedList.head);
 
-//check if specific value exists in the list
-LinkedList.prototype.checkValue = function(value) {
-  var current = this.head;
-  var counter = 0
-  while(current){
-    if(current.value === value) {
-      return console.log("value " + value + " is on the index " + counter);
-    }
-    current = current.next;
-    counter += 1;
-  }
-  return console.log("value " + value + " is not in the list");
-};
-linkedList.checkValue('b');
-linkedList.checkValue('x');
 
+//remove first node
+LinkedList.prototype.removeFirst = function() {
+  this.head = this.head.next;
+  this.length -= 1;
+  console.log('first node removed');
+};
+
+linkedList.removeFirst();
+console.log(linkedList.head);
+
+
+//remove a node with wanted value (if found)
+LinkedList.prototype.removeValue = function(value) {
+  var current = this.head;
+  var previous;
+
+  if(this.head.value === value) {
+    return this.head = this.head.next;
+  }
+
+  while(current) {
+    if(value === current.value) {
+      console.log('removed ' + value);
+      this.length -= 1;
+      return previous.next = current.next;
+    }
+    previous = current;
+    current = current.next;
+  }
+  console.log('value ' + value + ' is not on the list');
+};
+linkedList.removeValue('a');
+linkedList.removeValue('d');
+console.log(linkedList.head);
+console.log(linkedList.length);
 
 //turn an array into a linked list
 LinkedList.prototype.arrayToLinkedList = function(array) {
@@ -159,6 +203,7 @@ var linkedList2 = new LinkedList();
 linkedList2.arrayToLinkedList([1,2,3]);
 console.log(linkedList2.head);
 console.log(linkedList2.length);
+
 
 //reverse a linked list
 LinkedList.prototype.reverse = function() {
@@ -191,5 +236,3 @@ LinkedList.prototype.reverse = function() {
   return console.log(this.head);
 };
 linkedList2.reverse();
-
-//remove a node with wanted value (if found)
