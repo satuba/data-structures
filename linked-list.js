@@ -206,33 +206,25 @@ console.log(linkedList2.length);
 
 //reverse a linked list
 LinkedList.prototype.reverse = function() {
+  console.log('reverssseeee');
+  console.log(this.head);
   var current = this.head;
-  var values = [];
-  var index;
+  var previous = null;
+  var nextTemp;
 
-  //collect values into an array
-  while(current){
-    values.push(current.value);
-    current = current.next;
+  if(this.head.next === null) {
+    return console.log('reversed ',this.head);
   }
-  index = values.length-1;
 
-  //build linked list from an array
-  this.head = {
-    value: values[index],
-    next: null
-  };
-  index -= 1;
-  current = this.head;
-  while(index >= 0) {
-    current.next = {
-      value: values[index],
-      next: null
-    };
-    current = current.next;
-    index -= 1;
+  while(current != null){
+    nextTemp = current.next;
+    current.next = previous;
+    previous = current;
+    current = nextTemp;
   }
-  return console.log(this.head);
-};
+  this.head = previous;
+  return console.log('reversed ',this.head);
+}
+
 linkedList2.reverse();
 linkedList.reverse();
