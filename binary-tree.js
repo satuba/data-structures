@@ -42,7 +42,6 @@ Tree.prototype.add = function(value) {
 
 var tree = new Tree();
 tree.add(4);
-tree.add(2);
 tree.add(3);
 tree.add(13);
 tree.add(3);
@@ -89,7 +88,7 @@ Tree.prototype.contains = function(value, f) {
   while(current) {
     if(value === current.value) {
       if(f) {
-        return f();
+        return f(current);
       } else {
         return console.log('node found: ', value);
       }
@@ -103,8 +102,8 @@ Tree.prototype.contains = function(value, f) {
   return console.log('node not found');
 };
 
-var fun = function() {
-  console.log('this node was found and this function was called!');
+var fun = function(node) {
+  console.log('this node was found and this function was called! node: ', node.value);
 };
 
 tree.contains(4);
@@ -205,37 +204,90 @@ Tree.prototype.toArray = function() {
 tree.toArray();
 
 
+// almost ready ...
 //remove node from tree if matches given value
 Tree.prototype.remove = function(value) {
-  var root = this.root;
+  var parent;
+  var leftOrRight;
+
+  function remove(node) {
+    console.log('remove function called');
+    console.log('node: ', node.value);
+    console.log('parent: ', parent);
+    //1. node is a leaf node
+    if(node.left == null && node.right == null) {
+      console.log('leaf node');
+      if(leftOrRight == 'left') {
+        parent.left = null;
+        return console.log('removed: ', node);
+      } else if(leftOrRight == 'right') {
+        parent.right = null;
+        return console.log('removed: ', node);
+      } else {
+        return console.log('removed: ', this.root);
+        this.root = null;
+      }
+      //two children
+    } else if(node.left && node.right) {
+
+    }
+
+
+    //one child
+    if(parent.left === node) {
+      console.log('node = parent.left');
+      if(!node.right) {
+        parent.left = node.left;
+      } else if(!node.left) {
+        parent.left = node.right;
+      }
+    } else if (parent.right === node) {
+      console.log('node = parent.right');
+      if(!node.right) {
+        parent.right = node.left;
+      } else if(!node.left) {
+        parent.right = node.right;
+        return console.log('removed: ', node.value);
+      }
+    }
+
+
+  }
 
   function findNode(node) {
     if(value == node.value){
-      return console.log('gotta remove this');//remove node
+      return remove(node);
     } else if(value > node.value){
       if(node.right) {
+        parent = node;
+        leftOrRight = 'right';
         return findNode(node.right);
       } else {
-        return console.log('RIGTHcannot remove something that does not exist');
+        return console.log('cannot remove something that does not exist');
       }
     } else if (value < node.value){
       if(node.left) {
+        parent = node;
+        leftOrRight = 'left';
         return findNode(node.left);
       } else {
         return console.log('cannot remove something that does not exist');
       }
     }
   }
-  findNode(root);
+  findNode(this.root);
 
 }
-tree.remove(2);
+tree.remove(14);//one child
+tree.toArray();
+tree.remove(15);//leaf node
+tree.toArray();
 
 
 //check if a tree is a binary search tree
-Tree.prototype.isBinary = function(node) {
+Tree.prototype.isBinary = function() {
   var root = this.root;
-  if(!root.value) {
+  if(!root) {
     return console.log('No nodes in this tree. Not a binary search tree');
   }
 
@@ -256,56 +308,71 @@ Tree.prototype.isBinary = function(node) {
   return console.log('binary search tree');
 };
 
-// tree.isBinary(tree.root);
+tree.isBinary();
 
 
+console.log(tree.root)
 //closest value to a given value.
 //doesn't work yet.
 Tree.prototype.closest = function(value) {
-  var closestDistance;
-  var currentDistance;
-  if(value > this.root.value) {
-    closestDistance = value - this.root.value;
-  } else {
-    closestDistance = this.root.value - value;
+  var previous;
+  var current = this.root;
+  var value = value;
+  var nextDifference;
+  var previousDifference;
+  var answer;
+  if(value == current.value) {
+    answer = current.value;
+    return console.log('closest: ' + answer);
   }
 
-  closestDistance = (closestDistance < 0) ? closestDistance * -1 : currentDistance;
-  var currentDistance = closestDistance;
-  var closestValue = this.root.value;
-  var value = value;
-
-
-  function traverse(currentNode) {
-    console.log(currentNode);
-
-    //check if value matches
-    if(value == currentNode.value) {
-      return console.log('closest value: ', currentNode.value);
+  function traverse3(node) {
+    if(node.left != null) {
+      previous = node.value;
+      traverse3(node.left);
     }
 
-    //update current distance
-    currentDistance = value - currentNode.value;
-    currentDistance = (currentDistance < 0) ? currentDistance * -1 : currentDistance;
-    console.log(currentDistance);
-    //check if current distance is smaller than closest distance
-    if(currentDistance < closestDistance) {
-      console.log('jajaj');
-      closestDistance = currentDistance;
-      closestValue = currentNode.value;
+    if(node.value > value || (node.left == null && node.right == null)) {
+      console.log('node: ', node.value);
+      console.log('previous: ', previous.value);
+      nextDifference = node.value - value;
+      previousDifference = previous.value - value;
+      console.log("diferences " + nextDifference + " " + previousDifference);
+      if(nextDifference >= previousDifference) {
+        return answer = previous.value;
+      } else {
+        return answer = node.value;
+      }
     }
-
-    //traverse
-    if(value < currentNode.value && currentNode.left != null) {
-      traverse(currentNode.left);
+    if(node.right != null) {
+      previous = node.value;
+      traverse3(node.right);
     }
-    console.log('');
-    if(value > currentNode.value && currentDistance.right != null) {
-      traverse(currentNode.right);
-    }
-  };
-  traverse(this.root);
-  console.log(closestDistance);
-  return console.log(closestValue);
+  }
+  traverse3(current);
+  // function traverse(current) {
+  // while(current) {
+  //   if(current.left) {
+  //     previous = current;
+  //     current = current.left;
+  //   }
+  //   if(current.value > value || (current.left == null && current.right == null)) {
+  //     console.log('current: ', current.value);
+  //     console.log('previous: ', previous.value);
+  //     nextDifference = current.value - value;
+  //     previousDifference = previous.value - value;
+  //     console.log("diferences " + nextDifference + " " + previousDifference);
+  //     if(nextDifference >= previousDifference) {
+  //       return console.log('closest previous: ' + previous.value);
+  //     } else {
+  //       return console.log('closest current: ' + current.value);
+  //     }
+  //   }
+  //   if(current.right) {
+  //     previous = current;
+  //     current = current.right;
+  //   }
+  // }
+  console.log('closest: ' + answer);
 };
-// tree.closest(8);
+tree.closest(5);
